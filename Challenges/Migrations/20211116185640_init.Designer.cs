@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Challenges.Migrations
 {
     [DbContext(typeof(ChallengesContext))]
-    [Migration("20211022151350_Init")]
-    partial class Init
+    [Migration("20211116185640_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -61,11 +61,11 @@ namespace Challenges.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasAlternateKey("UserId", "ChallengeId");
+
                     b.HasIndex("ChallengeId");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ChallengesSubscriptions");
+                    b.ToTable("ChallengeSubscriptions");
                 });
 
             modelBuilder.Entity("Challenges.ChallengeUser", b =>
@@ -77,19 +77,21 @@ namespace Challenges.Migrations
                     b.Property<Guid>("ChallengeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<Guid>("StatusId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
+                    b.HasAlternateKey("UserId", "ChallengeId", "StatusId");
+
                     b.HasIndex("ChallengeId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("StatusId");
 
-                    b.ToTable("ChallengesUsers");
+                    b.ToTable("ChallengeUsers");
                 });
 
             modelBuilder.Entity("Challenges.Chapter", b =>
@@ -131,7 +133,7 @@ namespace Challenges.Migrations
                     b.HasIndex("ChapterId")
                         .IsUnique();
 
-                    b.ToTable("ChaptersChallenges");
+                    b.ToTable("ChallengeChapters");
                 });
 
             modelBuilder.Entity("Challenges.ChapterUser", b =>
@@ -148,11 +150,11 @@ namespace Challenges.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChapterId");
+                    b.HasAlternateKey("ChapterId", "UserId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ChaptersUsers");
+                    b.ToTable("ChapterUsers");
                 });
 
             modelBuilder.Entity("Challenges.Comment", b =>
@@ -161,59 +163,25 @@ namespace Challenges.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ChapterId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Text")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("Comments");
-                });
-
-            modelBuilder.Entity("Challenges.CommentChapter", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ChapterId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CommentId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ChapterId");
 
-                    b.HasIndex("CommentId")
-                        .IsUnique();
-
-                    b.ToTable("CommentsChapters");
-                });
-
-            modelBuilder.Entity("Challenges.CommentUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CommentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommentId")
-                        .IsUnique();
-
                     b.HasIndex("UserId");
 
-                    b.ToTable("CommentsUsers");
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("Challenges.Picture", b =>
@@ -250,11 +218,11 @@ namespace Challenges.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChallengeId");
+                    b.HasAlternateKey("ChallengeId", "PictureId");
 
                     b.HasIndex("PictureId");
 
-                    b.ToTable("PicturesChallenges");
+                    b.ToTable("ChallengePictures");
                 });
 
             modelBuilder.Entity("Challenges.PictureChapter", b =>
@@ -271,11 +239,11 @@ namespace Challenges.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChapterId");
+                    b.HasAlternateKey("ChapterId", "PictureId");
 
                     b.HasIndex("PictureId");
 
-                    b.ToTable("PicturesChapters");
+                    b.ToTable("ChapterPictures");
                 });
 
             modelBuilder.Entity("Challenges.PictureUser", b =>
@@ -292,12 +260,29 @@ namespace Challenges.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasAlternateKey("UserId", "PictureId");
+
                     b.HasIndex("PictureId")
                         .IsUnique();
 
-                    b.HasIndex("UserId");
+                    b.ToTable("UserPictures");
+                });
 
-                    b.ToTable("PicturesUsers");
+            modelBuilder.Entity("Challenges.Status", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("State");
+
+                    b.ToTable("Statuses");
                 });
 
             modelBuilder.Entity("Challenges.Tag", b =>
@@ -307,9 +292,12 @@ namespace Challenges.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("Name");
 
                     b.ToTable("Tags");
                 });
@@ -328,11 +316,11 @@ namespace Challenges.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChallengeId");
+                    b.HasAlternateKey("ChallengeId", "TagId");
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("TagsChallenges");
+                    b.ToTable("ChallengeTags");
                 });
 
             modelBuilder.Entity("Challenges.TagSubscription", b =>
@@ -349,11 +337,11 @@ namespace Challenges.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasAlternateKey("UserId", "TagId");
+
                     b.HasIndex("TagId");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TagsSubscriptions");
+                    b.ToTable("TagSubscriptions");
                 });
 
             modelBuilder.Entity("Challenges.User", b =>
@@ -408,9 +396,12 @@ namespace Challenges.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("UserName");
 
                     b.ToTable("Users");
                 });
@@ -429,8 +420,7 @@ namespace Challenges.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SubscriberId", "SubscribedOnId")
-                        .IsUnique();
+                    b.HasAlternateKey("SubscriberId", "SubscribedOnId");
 
                     b.ToTable("UsersSubscriptions");
                 });
@@ -462,6 +452,12 @@ namespace Challenges.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Challenges.Status", "Status")
+                        .WithMany("ChallengeUsers")
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Challenges.User", "User")
                         .WithMany("Challenges")
                         .HasForeignKey("UserId")
@@ -469,6 +465,8 @@ namespace Challenges.Migrations
                         .IsRequired();
 
                     b.Navigation("Challenge");
+
+                    b.Navigation("Status");
 
                     b.Navigation("User");
                 });
@@ -511,40 +509,17 @@ namespace Challenges.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Challenges.CommentChapter", b =>
+            modelBuilder.Entity("Challenges.Comment", b =>
                 {
                     b.HasOne("Challenges.Chapter", "Chapter")
                         .WithMany("Comments")
-                        .HasForeignKey("ChapterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Challenges.Comment", "Comment")
-                        .WithOne("Chapter")
-                        .HasForeignKey("Challenges.CommentChapter", "CommentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Chapter");
-
-                    b.Navigation("Comment");
-                });
-
-            modelBuilder.Entity("Challenges.CommentUser", b =>
-                {
-                    b.HasOne("Challenges.Comment", "Comment")
-                        .WithOne("CommentUser")
-                        .HasForeignKey("Challenges.CommentUser", "CommentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ChapterId");
 
                     b.HasOne("Challenges.User", "User")
                         .WithMany("Comments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
-                    b.Navigation("Comment");
+                    b.Navigation("Chapter");
 
                     b.Navigation("User");
                 });
@@ -679,13 +654,6 @@ namespace Challenges.Migrations
                     b.Navigation("Pictures");
                 });
 
-            modelBuilder.Entity("Challenges.Comment", b =>
-                {
-                    b.Navigation("Chapter");
-
-                    b.Navigation("CommentUser");
-                });
-
             modelBuilder.Entity("Challenges.Picture", b =>
                 {
                     b.Navigation("Challenges");
@@ -693,6 +661,11 @@ namespace Challenges.Migrations
                     b.Navigation("Chapters");
 
                     b.Navigation("PictureOwner");
+                });
+
+            modelBuilder.Entity("Challenges.Status", b =>
+                {
+                    b.Navigation("ChallengeUsers");
                 });
 
             modelBuilder.Entity("Challenges.Tag", b =>

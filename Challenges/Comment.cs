@@ -12,7 +12,7 @@ namespace Challenges
         public DateTime Date { get; set; }
 
         
-        public virtual CommentUser CommentUser { get; set; } //"автор"
-        public virtual CommentChapter Chapter { get; set; }  //глава
+        public virtual User User { get; set; } //"автор"
+        public virtual Chapter Chapter { get; set; }  //глава
     }
 }

@@ -15,6 +15,6 @@ namespace Challenges
         public virtual List<ChapterUser> Authors { get; set; } //авторы
         public virtual List<PictureChapter> Pictures { get; set; } //картинки
         public virtual ChapterChallenge Challenge { get; set; } //челлендж
-        public virtual List<CommentChapter> Comments { get; set; } //комментарии
+        public virtual List<Comment> Comments { get; set; } //комментарии
     }
 }

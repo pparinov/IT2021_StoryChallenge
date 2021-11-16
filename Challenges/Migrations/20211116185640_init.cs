@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Challenges.Migrations
 {
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -38,19 +38,6 @@ namespace Challenges.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Comments",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Comments", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Pictures",
                 columns: table => new
                 {
@@ -65,15 +52,29 @@ namespace Challenges.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Statuses",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    State = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Statuses", x => x.Id);
+                    table.UniqueConstraint("AK_Statuses_State", x => x.State);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tags",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tags", x => x.Id);
+                    table.UniqueConstraint("AK_Tags_Name", x => x.Name);
                 });
 
             migrationBuilder.CreateTable(
@@ -83,7 +84,7 @@ namespace Challenges.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Surname = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -101,10 +102,11 @@ namespace Challenges.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                    table.UniqueConstraint("AK_Users_UserName", x => x.UserName);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ChaptersChallenges",
+                name: "ChallengeChapters",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -113,15 +115,15 @@ namespace Challenges.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ChaptersChallenges", x => x.Id);
+                    table.PrimaryKey("PK_ChallengeChapters", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ChaptersChallenges_Challenges_ChallengeId",
+                        name: "FK_ChallengeChapters_Challenges_ChallengeId",
                         column: x => x.ChallengeId,
                         principalTable: "Challenges",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ChaptersChallenges_Chapters_ChapterId",
+                        name: "FK_ChallengeChapters_Chapters_ChapterId",
                         column: x => x.ChapterId,
                         principalTable: "Chapters",
                         principalColumn: "Id",
@@ -129,32 +131,7 @@ namespace Challenges.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CommentsChapters",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CommentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ChapterId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CommentsChapters", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CommentsChapters_Chapters_ChapterId",
-                        column: x => x.ChapterId,
-                        principalTable: "Chapters",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CommentsChapters_Comments_CommentId",
-                        column: x => x.CommentId,
-                        principalTable: "Comments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PicturesChallenges",
+                name: "ChallengePictures",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -163,15 +140,16 @@ namespace Challenges.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PicturesChallenges", x => x.Id);
+                    table.PrimaryKey("PK_ChallengePictures", x => x.Id);
+                    table.UniqueConstraint("AK_ChallengePictures_ChallengeId_PictureId", x => new { x.ChallengeId, x.PictureId });
                     table.ForeignKey(
-                        name: "FK_PicturesChallenges_Challenges_ChallengeId",
+                        name: "FK_ChallengePictures_Challenges_ChallengeId",
                         column: x => x.ChallengeId,
                         principalTable: "Challenges",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PicturesChallenges_Pictures_PictureId",
+                        name: "FK_ChallengePictures_Pictures_PictureId",
                         column: x => x.PictureId,
                         principalTable: "Pictures",
                         principalColumn: "Id",
@@ -179,7 +157,7 @@ namespace Challenges.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PicturesChapters",
+                name: "ChapterPictures",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -188,15 +166,16 @@ namespace Challenges.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PicturesChapters", x => x.Id);
+                    table.PrimaryKey("PK_ChapterPictures", x => x.Id);
+                    table.UniqueConstraint("AK_ChapterPictures_ChapterId_PictureId", x => new { x.ChapterId, x.PictureId });
                     table.ForeignKey(
-                        name: "FK_PicturesChapters_Chapters_ChapterId",
+                        name: "FK_ChapterPictures_Chapters_ChapterId",
                         column: x => x.ChapterId,
                         principalTable: "Chapters",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PicturesChapters_Pictures_PictureId",
+                        name: "FK_ChapterPictures_Pictures_PictureId",
                         column: x => x.PictureId,
                         principalTable: "Pictures",
                         principalColumn: "Id",
@@ -204,7 +183,7 @@ namespace Challenges.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TagsChallenges",
+                name: "ChallengeTags",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -213,15 +192,16 @@ namespace Challenges.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TagsChallenges", x => x.Id);
+                    table.PrimaryKey("PK_ChallengeTags", x => x.Id);
+                    table.UniqueConstraint("AK_ChallengeTags_ChallengeId_TagId", x => new { x.ChallengeId, x.TagId });
                     table.ForeignKey(
-                        name: "FK_TagsChallenges_Challenges_ChallengeId",
+                        name: "FK_ChallengeTags_Challenges_ChallengeId",
                         column: x => x.ChallengeId,
                         principalTable: "Challenges",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TagsChallenges_Tags_TagId",
+                        name: "FK_ChallengeTags_Tags_TagId",
                         column: x => x.TagId,
                         principalTable: "Tags",
                         principalColumn: "Id",
@@ -229,7 +209,7 @@ namespace Challenges.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ChallengesSubscriptions",
+                name: "ChallengeSubscriptions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -238,15 +218,16 @@ namespace Challenges.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ChallengesSubscriptions", x => x.Id);
+                    table.PrimaryKey("PK_ChallengeSubscriptions", x => x.Id);
+                    table.UniqueConstraint("AK_ChallengeSubscriptions_UserId_ChallengeId", x => new { x.UserId, x.ChallengeId });
                     table.ForeignKey(
-                        name: "FK_ChallengesSubscriptions_Challenges_ChallengeId",
+                        name: "FK_ChallengeSubscriptions_Challenges_ChallengeId",
                         column: x => x.ChallengeId,
                         principalTable: "Challenges",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ChallengesSubscriptions_Users_UserId",
+                        name: "FK_ChallengeSubscriptions_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -254,25 +235,32 @@ namespace Challenges.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ChallengesUsers",
+                name: "ChallengeUsers",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ChallengeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false)
+                    StatusId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ChallengesUsers", x => x.Id);
+                    table.PrimaryKey("PK_ChallengeUsers", x => x.Id);
+                    table.UniqueConstraint("AK_ChallengeUsers_UserId_ChallengeId_StatusId", x => new { x.UserId, x.ChallengeId, x.StatusId });
                     table.ForeignKey(
-                        name: "FK_ChallengesUsers_Challenges_ChallengeId",
+                        name: "FK_ChallengeUsers_Challenges_ChallengeId",
                         column: x => x.ChallengeId,
                         principalTable: "Challenges",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ChallengesUsers_Users_UserId",
+                        name: "FK_ChallengeUsers_Statuses_StatusId",
+                        column: x => x.StatusId,
+                        principalTable: "Statuses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ChallengeUsers_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -280,7 +268,7 @@ namespace Challenges.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ChaptersUsers",
+                name: "ChapterUsers",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -289,15 +277,16 @@ namespace Challenges.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ChaptersUsers", x => x.Id);
+                    table.PrimaryKey("PK_ChapterUsers", x => x.Id);
+                    table.UniqueConstraint("AK_ChapterUsers_ChapterId_UserId", x => new { x.ChapterId, x.UserId });
                     table.ForeignKey(
-                        name: "FK_ChaptersUsers_Chapters_ChapterId",
+                        name: "FK_ChapterUsers_Chapters_ChapterId",
                         column: x => x.ChapterId,
                         principalTable: "Chapters",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ChaptersUsers_Users_UserId",
+                        name: "FK_ChapterUsers_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -305,57 +294,34 @@ namespace Challenges.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CommentsUsers",
+                name: "Comments",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CommentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ChapterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CommentsUsers", x => x.Id);
+                    table.PrimaryKey("PK_Comments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CommentsUsers_Comments_CommentId",
-                        column: x => x.CommentId,
-                        principalTable: "Comments",
+                        name: "FK_Comments_Chapters_ChapterId",
+                        column: x => x.ChapterId,
+                        principalTable: "Chapters",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_CommentsUsers_Users_UserId",
+                        name: "FK_Comments_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "PicturesUsers",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PictureId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PicturesUsers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PicturesUsers_Pictures_PictureId",
-                        column: x => x.PictureId,
-                        principalTable: "Pictures",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PicturesUsers_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TagsSubscriptions",
+                name: "TagSubscriptions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -364,15 +330,42 @@ namespace Challenges.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TagsSubscriptions", x => x.Id);
+                    table.PrimaryKey("PK_TagSubscriptions", x => x.Id);
+                    table.UniqueConstraint("AK_TagSubscriptions_UserId_TagId", x => new { x.UserId, x.TagId });
                     table.ForeignKey(
-                        name: "FK_TagsSubscriptions_Tags_TagId",
+                        name: "FK_TagSubscriptions_Tags_TagId",
                         column: x => x.TagId,
                         principalTable: "Tags",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TagsSubscriptions_Users_UserId",
+                        name: "FK_TagSubscriptions_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserPictures",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PictureId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserPictures", x => x.Id);
+                    table.UniqueConstraint("AK_UserPictures_UserId_PictureId", x => new { x.UserId, x.PictureId });
+                    table.ForeignKey(
+                        name: "FK_UserPictures_Pictures_PictureId",
+                        column: x => x.PictureId,
+                        principalTable: "Pictures",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserPictures_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -390,6 +383,7 @@ namespace Challenges.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UsersSubscriptions", x => x.Id);
+                    table.UniqueConstraint("AK_UsersSubscriptions_SubscriberId_SubscribedOnId", x => new { x.SubscriberId, x.SubscribedOnId });
                     table.ForeignKey(
                         name: "FK_UsersSubscriptions_Users_SubscriberId",
                         column: x => x.SubscriberId,
@@ -399,178 +393,122 @@ namespace Challenges.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChallengesSubscriptions_ChallengeId",
-                table: "ChallengesSubscriptions",
+                name: "IX_ChallengeChapters_ChallengeId",
+                table: "ChallengeChapters",
                 column: "ChallengeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChallengesSubscriptions_UserId",
-                table: "ChallengesSubscriptions",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ChallengesUsers_ChallengeId",
-                table: "ChallengesUsers",
-                column: "ChallengeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ChallengesUsers_UserId",
-                table: "ChallengesUsers",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ChaptersChallenges_ChallengeId",
-                table: "ChaptersChallenges",
-                column: "ChallengeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ChaptersChallenges_ChapterId",
-                table: "ChaptersChallenges",
+                name: "IX_ChallengeChapters_ChapterId",
+                table: "ChallengeChapters",
                 column: "ChapterId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChaptersUsers_ChapterId",
-                table: "ChaptersUsers",
-                column: "ChapterId");
+                name: "IX_ChallengePictures_PictureId",
+                table: "ChallengePictures",
+                column: "PictureId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChaptersUsers_UserId",
-                table: "ChaptersUsers",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CommentsChapters_ChapterId",
-                table: "CommentsChapters",
-                column: "ChapterId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CommentsChapters_CommentId",
-                table: "CommentsChapters",
-                column: "CommentId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CommentsUsers_CommentId",
-                table: "CommentsUsers",
-                column: "CommentId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CommentsUsers_UserId",
-                table: "CommentsUsers",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PicturesChallenges_ChallengeId",
-                table: "PicturesChallenges",
+                name: "IX_ChallengeSubscriptions_ChallengeId",
+                table: "ChallengeSubscriptions",
                 column: "ChallengeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PicturesChallenges_PictureId",
-                table: "PicturesChallenges",
+                name: "IX_ChallengeTags_TagId",
+                table: "ChallengeTags",
+                column: "TagId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChallengeUsers_ChallengeId",
+                table: "ChallengeUsers",
+                column: "ChallengeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChallengeUsers_StatusId",
+                table: "ChallengeUsers",
+                column: "StatusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChapterPictures_PictureId",
+                table: "ChapterPictures",
                 column: "PictureId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PicturesChapters_ChapterId",
-                table: "PicturesChapters",
+                name: "IX_ChapterUsers_UserId",
+                table: "ChapterUsers",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_ChapterId",
+                table: "Comments",
                 column: "ChapterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PicturesChapters_PictureId",
-                table: "PicturesChapters",
-                column: "PictureId");
+                name: "IX_Comments_UserId",
+                table: "Comments",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PicturesUsers_PictureId",
-                table: "PicturesUsers",
+                name: "IX_TagSubscriptions_TagId",
+                table: "TagSubscriptions",
+                column: "TagId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserPictures_PictureId",
+                table: "UserPictures",
                 column: "PictureId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PicturesUsers_UserId",
-                table: "PicturesUsers",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TagsChallenges_ChallengeId",
-                table: "TagsChallenges",
-                column: "ChallengeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TagsChallenges_TagId",
-                table: "TagsChallenges",
-                column: "TagId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TagsSubscriptions_TagId",
-                table: "TagsSubscriptions",
-                column: "TagId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TagsSubscriptions_UserId",
-                table: "TagsSubscriptions",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UsersSubscriptions_SubscriberId_SubscribedOnId",
-                table: "UsersSubscriptions",
-                columns: new[] { "SubscriberId", "SubscribedOnId" },
                 unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ChallengesSubscriptions");
+                name: "ChallengeChapters");
 
             migrationBuilder.DropTable(
-                name: "ChallengesUsers");
+                name: "ChallengePictures");
 
             migrationBuilder.DropTable(
-                name: "ChaptersChallenges");
+                name: "ChallengeSubscriptions");
 
             migrationBuilder.DropTable(
-                name: "ChaptersUsers");
+                name: "ChallengeTags");
 
             migrationBuilder.DropTable(
-                name: "CommentsChapters");
+                name: "ChallengeUsers");
 
             migrationBuilder.DropTable(
-                name: "CommentsUsers");
+                name: "ChapterPictures");
 
             migrationBuilder.DropTable(
-                name: "PicturesChallenges");
-
-            migrationBuilder.DropTable(
-                name: "PicturesChapters");
-
-            migrationBuilder.DropTable(
-                name: "PicturesUsers");
-
-            migrationBuilder.DropTable(
-                name: "TagsChallenges");
-
-            migrationBuilder.DropTable(
-                name: "TagsSubscriptions");
-
-            migrationBuilder.DropTable(
-                name: "UsersSubscriptions");
+                name: "ChapterUsers");
 
             migrationBuilder.DropTable(
                 name: "Comments");
 
             migrationBuilder.DropTable(
-                name: "Chapters");
+                name: "TagSubscriptions");
 
             migrationBuilder.DropTable(
-                name: "Pictures");
+                name: "UserPictures");
+
+            migrationBuilder.DropTable(
+                name: "UsersSubscriptions");
 
             migrationBuilder.DropTable(
                 name: "Challenges");
 
             migrationBuilder.DropTable(
+                name: "Statuses");
+
+            migrationBuilder.DropTable(
+                name: "Chapters");
+
+            migrationBuilder.DropTable(
                 name: "Tags");
+
+            migrationBuilder.DropTable(
+                name: "Pictures");
 
             migrationBuilder.DropTable(
                 name: "Users");

@@ -17,7 +17,7 @@ namespace Challenges
         public virtual List<TagSubscription> TagSubscibtions { get; set; } //подписки на тэги
         public virtual List<ChallengeUser> Challenges { get; set; } //челледжи в которых участвует
         public virtual List<PictureUser> Pictures { get; set; } //его картинки
-        public virtual List<CommentUser> Comments { get; set; } //комментарии
+        public virtual List<Comment> Comments { get; set; } //комментарии
         public virtual List<ChapterUser> Chapters { get; set; } //главы
 
 
