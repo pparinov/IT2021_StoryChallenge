@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace Challenges
@@ -9,59 +10,12 @@ namespace Challenges
     public class TagRepository : ITagRepository
     {
         private ChallengesContext context;
-        public TagRepository(ChallengesContext dbContext)
-        {
-            context = dbContext;
-        }
 
-        public void Delete(Guid id)
+        public TagRepository(ChallengesContext dbcontext)
         {
-            context.Tags.Remove(context.Tags.Where(t => t.Id == id).Single());
-            Save();
+            context = dbcontext;
         }
-
-        public IEnumerable<Tag> FindTags(string name)
-        {
-            return context.Tags.Where<Tag>(t => t.Name.Contains(name)).ToList();
-        }
-
-        public IEnumerable<Tag> GetAll()
-        {
-            return context.Tags.ToList();
-        }
-
-        public Tag GetByID(Guid id)
-        {
-            return context.Tags.Where<Tag>(t => t.Id == id).Single();
-        }
-
-        public IEnumerable<Tag> GetChallengeTags(Guid challengeId)
-        {
-            return context.Tags.Where(t=>t.Challenges.Contains(context.ChallengeTags.Where(ct => (ct.ChallengeId == challengeId) && (ct.TagId == t.Id)).Single())).ToList();
-        }
-
-        public IEnumerable<Tag> GetSubscribtions(Guid userId)
-        {
-            return context.Tags.Where(t => t.Subscribers.Contains(context.TagSubscriptions.Where(ts => (ts.UserId == userId) && (ts.TagId == t.Id)).Single())).ToList();
-        }
-
-        public void Insert(Tag entity)
-        {
-            context.Tags.Add(entity);
-            Save();
-        }
-
-        public void Save()
-        {
-            context.SaveChanges();
-        }
-
-        public void Update(Tag entity)
-        {
-            context.Tags.Update(entity);
-            Save();
-        }
-
+        
         private bool disposed = false;
 
         protected virtual void Dispose(bool disposing)
@@ -80,6 +34,63 @@ namespace Challenges
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public async Task<ICollection<Tag>> FindTags(string searchString)
+        {
+            return await context.Tags.Where<Tag>(t => t.Name.Contains(searchString)).ToListAsync();
+        }
+
+        public async Task<ICollection<Tag>> GetSubscribtions(Guid userId)
+        {
+            return await context.Tags.Where(t => t.Subscribers.Contains(context.TagSubscriptions.Where(ts => (ts.UserId == userId) && (ts.TagId == t.Id)).Single())).ToListAsync();
+        }
+
+        public async Task<ICollection<Tag>> GetChallengeTags(Guid challengeId)
+        {
+            return await context.Tags.Where(t => t.Challenges.Contains(context.ChallengeTags.Where(ct => (ct.ChallengeId == challengeId) && (ct.TagId == t.Id)).Single())).ToListAsync();
+        }
+
+        public async Task<ICollection<Tag>> GetAll()
+        {
+            return await context.Tags.ToListAsync();
+        }
+
+        public async Task<Tag> GetByID(Guid id)
+        {
+            return await context.Tags.Where<Tag>(t => t.Id == id).SingleAsync();
+        }
+
+        public async Task<Tag> Insert(Tag entity)
+        {
+            context.Tags.Add(entity);
+            await Save();
+            return entity;
+        }
+
+        public async Task<int> Delete(Guid id)
+        {
+            context.Tags.Remove(context.Tags.Where(t => t.Id == id).Single());
+            return await Save();
+
+        }
+
+        public async Task<Tag> Update(Tag entity)
+        {
+            if (entity == null)
+                return null;
+            Tag exist = await context.Set<Tag>().FindAsync(entity.Id);
+            if (exist != null)
+            {
+                context.Entry(exist).CurrentValues.SetValues(entity);
+                await Save();
+            }
+            return exist;
+        }
+
+        public async Task<int> Save()
+        {
+            return await context.SaveChangesAsync();
         }
     }
 }

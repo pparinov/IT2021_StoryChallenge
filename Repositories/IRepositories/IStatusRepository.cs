@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Challenges
 {
     interface IStatusRepository : IGenericRepository<Status>
     {
-        Status GetStatus(Guid userId, Guid challengeId);
+        Task<Status> GetStatus(Guid userId, Guid challengeId);
     }
 }

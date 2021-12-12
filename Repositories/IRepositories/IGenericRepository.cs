@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Challenges
 {
     interface IGenericRepository<T> : IDisposable
     {
-        IEnumerable<T> GetAll();
-        T GetByID(Guid id);
-        void Insert(T entity);
-        void Delete(Guid id);
-        void Update(T entity);
-        void Save();
+        Task<ICollection<T>> GetAll();
+        Task<T> GetByID(Guid id);
+        Task<T> Insert(T entity);
+        Task<int> Delete(Guid id);
+        Task<T> Update(T entity);
+        Task<int> Save();
 
     }
 }

@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Challenges
 {
     interface IUserRepository : IGenericRepository<User>
     {
-        IEnumerable<User> FindUsers(string searchString);
-        IEnumerable<User> GetSubscribtions(Guid subscriberId);
-        IEnumerable<User> GetSubscribers(Guid userId);
-        IEnumerable<User> GetChallengeAuthors(Guid challengeId);
-        IEnumerable<User> GetChapterAuthors(Guid chapterId);
+        Task<ICollection<User>> FindUsers(string searchString);
+        Task<ICollection<User>> GetSubscribtions(Guid subscriberId);
+        Task<ICollection<User>> GetSubscribers(Guid userId);
+        Task<ICollection<User>> GetChallengeAuthors(Guid challengeId);
+        Task<ICollection<User>> GetChapterAuthors(Guid chapterId);
 
     }
 }
