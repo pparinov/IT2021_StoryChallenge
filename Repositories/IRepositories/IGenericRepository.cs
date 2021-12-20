@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Challenges
 {
-    interface IGenericRepository<T> : IDisposable
+    public interface IGenericRepository<T> : IDisposable
     {
         Task<ICollection<T>> GetAll();
         Task<T> GetByID(Guid id);
