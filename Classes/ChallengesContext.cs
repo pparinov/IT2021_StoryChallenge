@@ -54,7 +54,17 @@ namespace Challenges
                 .HasAlternateKey(p => new { p.UserName });
             modelBuilder.Entity<Tag>()
                 .HasAlternateKey(p => new { p.Name });
-            
+            modelBuilder.Entity<Challenge>().HasData(new Challenge() { Id = Guid.NewGuid(), Name = "Горе от ума", StartDate = DateTime.Now, EndDate = new DateTime(2021 , 12 , 31) });
+            modelBuilder.Entity<Challenge>().HasData(new Challenge() { Id = Guid.NewGuid(), Name = "1984", StartDate = new DateTime(2021 , 03 , 05), EndDate = DateTime.Now });
+            modelBuilder.Entity<Challenge>().HasData(new Challenge() { Id = Guid.NewGuid(), Name = "Государь", StartDate = new DateTime(2020 , 06 , 01), EndDate = new DateTime(2022 , 06 , 01) });
+            modelBuilder.Entity<Challenge>().HasData(new Challenge() { Id = Guid.NewGuid(), Name = "Одиннадцать минут", StartDate = new DateTime(2020 , 02 , 20), EndDate = new DateTime(2020 , 09 , 30) });
+            modelBuilder.Entity<Challenge>().HasData(new Challenge() { Id = Guid.NewGuid(), Name = "Человек для себя", StartDate = new DateTime(2021 , 10 , 13), EndDate = DateTime.Now });
+            modelBuilder.Entity<Challenge>().HasData(new Challenge() { Id = Guid.NewGuid(), Name = "Секрет шведского благополучия", StartDate = new DateTime(2020 , 05 , 04), EndDate = new DateTime(2021 , 10 , 13) });
+            modelBuilder.Entity<Challenge>().HasData(new Challenge() { Id = Guid.NewGuid(), Name = "Цивилизация с нуля", StartDate = new DateTime(2020 , 05 , 24), EndDate = new DateTime(2021 , 05 , 11) });
+            modelBuilder.Entity<Challenge>().HasData(new Challenge() { Id = Guid.NewGuid(), Name = "Лисья нора", StartDate = new DateTime(2021 , 09 , 21), EndDate = new DateTime(2021 , 10 , 6) });
+            modelBuilder.Entity<Challenge>().HasData(new Challenge() { Id = Guid.NewGuid(), Name = "Повелитель мух", StartDate = new DateTime(2020 , 02 , 20), EndDate = new DateTime(2021 , 02 , 09) });
+            modelBuilder.Entity<Challenge>().HasData(new Challenge() { Id = Guid.NewGuid(), Name = "Капитал", StartDate = new DateTime(2020 , 02 , 27), EndDate = new DateTime(2021 , 10 , 29) });
+
         }
 
         public ChallengesContext()
